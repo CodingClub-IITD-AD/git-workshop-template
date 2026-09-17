@@ -1,71 +1,54 @@
-# Git & GitHub Workshop: the challenges
+# Git & GitHub Workshop: finishing the challenges
 
-Finish these with your team, at your own pace. Everything runs on your own laptop plus your team's GitHub repo. Nothing else is needed.
+We ran out of time in the room after round 1. The rest works exactly the same way, from anywhere, on your own schedule.
 
-Your team repo is the link on ccgit.vercel.app (open the site, you're still logged in) or in the attendance list. It looks like `https://github.com/CodingClub-IITD-AD/coding-club-pool-…`.
+**How it works:** open **ccgit.vercel.app**. Your screen shows your team's current round with the exact commands. Every minute the site checks your team's GitHub repo; when the round is complete, it sets up the next round in your repo and your screen moves on. Nobody has to press anything.
+
+**Teammates not around?** Every round can be done by one person. Do all the parts yourself, one branch each.
+
+**Can't get in?** If the site asks you to check in again, use the **same entry number and the same GitHub username** as in the room and you land back in your team.
 
 ---
 
-## 0. Setup (once)
+## 0. Setup (once per laptop)
 
-**Git installed?** Open a terminal (Windows: **Git Bash** from the Start menu, not PowerShell. Mac: Terminal) and type:
+Terminal: Windows → **Git Bash** from the Start menu (not PowerShell). Mac → Terminal.
 
 ```
 git --version
 ```
-
-No version → Windows: https://git-scm.com/download/win, run the installer, Next on everything. Mac: click "Install" when the popup appears.
-
-**Tell git who you are (once per laptop):**
+No version → Windows: https://git-scm.com/download/win, Next on everything. Mac: click Install on the popup.
 
 ```
 git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
 ```
 
-**Accept the invitation.** Open your team repo on GitHub. There is a yellow banner at the top: *You've been invited to collaborate* → **Accept**. No banner? Click the bell icon (top right) → the invitation is there. Without this, every `git push` fails with 403.
+**Accept the invitation.** Open your team repo (the link on your screen). Yellow banner at the top → **Accept**. No banner → the bell icon top right. Without this every `git push` fails with 403.
 
-**Clone it:**
-
+**Clone it** (once):
 ```
 git clone https://github.com/CodingClub-IITD-AD/coding-club-pool-XXXX.git
 cd coding-club-pool-XXXX
 git status
 ```
 
-`git status` should say `On branch main … up to date with 'origin/main'`.
-
-**Signing in on push.** The first `git push` asks you to sign in.
-- Windows: a browser window opens → sign in → Authorize. Done forever.
-- Mac: the terminal asks for a username and password. **GitHub does not accept your account password here.** Make a token: github.com → your photo → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → tick `repo` → Generate → copy it. Paste the token where it asks for the password (nothing appears while you paste, that's normal).
-- Anything else failing: on the repo page click the green **Code** button → **Codespaces** → **Create codespace on main**. That's VS Code in the browser with git already signed in. Do everything there.
+**Signing in on the first push.** Windows: a browser window opens, sign in, Authorize, done. Mac: the terminal asks for a username and password; **GitHub does not accept your password here.** Make a token: github.com → your photo → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → tick `repo` → copy it → paste it as the password (nothing shows while pasting). Anything else failing: repo page → green **Code** → **Codespaces** → Create. That's VS Code in the browser, already signed in.
 
 ---
 
-## 1. Spacecraft repair (branches and pull requests)
+## Round 1 · Spacecraft repair (branches + pull requests)
 
-`mission_control.json` in your repo:
-
-```json
-{
-  "engine": "OFFLINE",
-  "shields": "OFFLINE",
-  "communications": "OFFLINE",
-  "escape_route": "UNDECIDED"
-}
-```
-
-Three systems, three people. Decide who takes which: **engine**, **shields**, **communications**. Each person, on their own laptop:
+`mission_control.json` has engine, shields, communications OFFLINE. One system each (your screen says which). Alone: do all three, one branch each.
 
 ```
 git switch main
 git pull
 git switch -c repair-engine
 ```
+Branch names must be **exactly** `repair-engine`, `repair-shields`, `repair-comms`.
 
-Branch names must be exactly: `repair-engine`, `repair-shields`, `repair-comms`.
-
-Open `mission_control.json` in any editor. Change **only your line**: `"OFFLINE"` → `"ONLINE"`. Keep every `{`, `}`, `"` and `,` exactly as they are. Save.
+Open `mission_control.json`, change only your line `"OFFLINE"` → `"ONLINE"`. Keep every `{ } " ,` as it is. Save.
 
 ```
 git diff
@@ -73,164 +56,77 @@ git add mission_control.json
 git commit -m "Bring engine online"
 git push -u origin repair-engine
 ```
+Git prints a link ending `/pull/new/repair-engine`. Open it (or the yellow **Compare & pull request** button on the repo page) → **Create pull request** → **Merge pull request** → **Confirm merge**.
 
-Git prints a link ending in `/pull/new/repair-engine`. Open it (or go to the repo page: there's a yellow **Compare & pull request** button). **Create pull request** → **Merge pull request** → **Confirm merge**.
+Then: `git switch main && git pull`.
 
-Then everyone:
+**Complete when** all three systems are ONLINE on main and the three `repair-*` pull requests are merged. The site moves your team to round 2 within a minute.
 
-```
-git switch main
-git pull
-cat mission_control.json
-```
+**Common problems**
+- 403 on push → invitation not accepted.
+- Edited while on `main` → `git switch -c repair-engine` now, the edit comes along.
+- Pushed a wrong branch name → `git switch -c repair-engine`, push that, open the PR from it.
+- File on main is broken (a missing `{`) → someone deleted a character; fix it on a branch, PR, merge. Git merged exactly what was written.
+- The site didn't move on → check the repo page: all three lines ONLINE? all three PRs merged with the exact names?
 
-**Done when** all three lines say ONLINE on main and you each merged your own pull request.
+## Round 2 · The escape route (a conflict, on purpose)
 
-What you learned: a branch is your own lane. Nobody pushes to `main` directly (it is locked). The pull request is how work gets in, and someone can read the change before it does. Three people changed three different lines, so all three merged without a fight.
+Two people change the **same line** differently. Your screen gives roles: planner A (ROOFTOP), planner B (TUNNEL), Commander. Alone: play all three.
 
-**It broke:**
-- `push` rejected / 403 → you never accepted the invitation. Accept it, push again.
-- You edited the file while still on `main` → run `git switch -c repair-engine` now; the edit comes with you. Carry on.
-- You pushed with the wrong branch name → `git switch -c repair-engine`, `git push -u origin repair-engine`, open the pull request from that one. The old branch can stay.
-- The file on main looks broken (a missing `{`) → someone deleted a character. Fix it on a branch, pull request, merge. Git merged exactly what was written; that's the point.
-
----
-
-## 2. The escape route (a merge conflict, on purpose)
-
-Same file, same line, two people, different answers. Roles: **A** and **B** edit, **C** is Mission Commander and decides.
-
-Everyone first:
-
-```
-git switch main
-git pull
-```
-
-**A:**
-```
-git switch -c route-rooftop
-```
-change `"escape_route": "UNDECIDED"` → `"escape_route": "ROOFTOP"`, save.
-```
-git add mission_control.json
-git commit -m "Choose the rooftop route"
-git push -u origin route-rooftop
-```
-
-**B, at the same time, from the same main:**
-```
-git switch -c route-tunnel
-```
-change the same line to `"TUNNEL"`, save.
-```
-git add mission_control.json
-git commit -m "Choose the tunnel route"
-git push -u origin route-tunnel
-```
-
-**A** opens a pull request and merges it. Main now says ROOFTOP.
-
-**B** opens a pull request. GitHub says: **This branch has conflicts that must be resolved.** Git is not broken. Two humans changed the same line differently, and git refuses to guess.
-
-**C (Mission Commander)** resolves it: on B's pull request click **Resolve conflicts**. You see:
-
-```
-<<<<<<< route-tunnel
-  "escape_route": "TUNNEL",
-=======
-  "escape_route": "ROOFTOP",
->>>>>>> main
-```
-
-The rooftop is unsafe. Delete the marker lines and the ROOFTOP line so only `"escape_route": "TUNNEL",` remains. **Mark as resolved** → **Commit merge** → **Merge pull request**.
-
-Everyone: `git switch main && git pull`. Main says TUNNEL.
-
-**Done when** `escape_route` is TUNNEL on main and both pull requests are merged.
-
----
-
-## 3. The time machine (reading history)
-
-Something was committed, then removed. It is still in the history. One teammate hides it, the other two find it.
-
-**The hider:**
+Both planners, from the same main:
 ```
 git switch main && git pull
-git switch -c mission-key
+git switch -c route-rooftop            # B: route-tunnel
 ```
-Create a file `challenge/mission_access.env` containing:
+Change `"escape_route": "UNDECIDED"` → `"ROOFTOP"` (B: `"TUNNEL"`). Save.
 ```
-# Synthetic workshop value; never a real credential.
-MISSION_ADMIN_KEY=ORBIT-7731
+git add mission_control.json
+git commit -m "Choose escape route"
+git push -u origin route-rooftop       # B: route-tunnel
 ```
-(pick your own code). Then:
-```
-git add challenge/mission_access.env
-git commit -m "Store temporary mission admin key"
-```
-Now edit the file: replace the code with `REMOVED`. Then:
-```
-git add challenge/mission_access.env
-git commit -m "Remove temporary mission admin key from current config"
-git push -u origin mission-key
-```
-Open the pull request, merge it. Main now has the file with `REMOVED` in it, and two commits behind it.
+Both open pull requests. **Merge rooftop first.** The tunnel PR now says *This branch has conflicts that must be resolved*. Git is not broken: two humans disagreed, git refuses to guess.
 
-**The finders:**
+**Commander:** on the tunnel PR → **Resolve conflicts**. Delete the `<<<<<<<`, `=======`, `>>>>>>>` lines and the ROOFTOP line, keep `"escape_route": "TUNNEL",` → **Mark as resolved** → **Commit merge** → **Merge pull request**. The rooftop was unsafe.
+
+**Complete when** main says TUNNEL and both `route-*` PRs are merged. The site then commits a secret into your repo and moves you to round 3.
+
+## Round 3 · The time machine (reading history)
+
+The site added a file `challenge/mission_access.env` and then replaced its code with `REMOVED`. It is still in the history.
+
 ```
 git switch main
 git pull
-cat challenge/mission_access.env        # says REMOVED
-git log --oneline                        # find "Store temporary mission admin key", note its id
-git show <that id>                       # the old contents are right there
+cat challenge/mission_access.env       # REMOVED
+git log --oneline                      # find "Store temporary mission admin key"
+git show <that commit id>              # the code is right there
 ```
+Type the code into the box on your screen. One correct answer moves the team on. Nothing to commit.
 
-Tell the hider the code. No commit needed.
+## Round 4 · Mad Lib (the whole loop, alone)
 
-**Done when** both finders read the code out of `git show`.
+On your screen: type an adjective, a noun, a verb → **Download** your file (`madlib/submissions/<yourusername>.json`). Put it in your clone's `madlib/submissions/` folder. Then, on your own:
 
-What you learned: nothing committed is gone. `git log` lists every save point; `git show` opens one.
+```
+git switch main && git pull
+git switch -c madlib-yourusername
+git add madlib/submissions/yourusername.json
+git commit -m "Add my Mad Lib words"
+git push -u origin madlib-yourusername
+```
+Pull request → Merge. Only your own file in your PR.
+
+**Complete when** at least one credited file is on main. The projector page then writes your team's story with your names.
+
+## Round 5 · Command cards
+
+On your screen: a repo state and a hand of full git commands. Play the right one; the picture moves. Three rounds. One teammate finishing completes the team.
 
 ---
 
-## 4. Mad Lib (the whole loop, solo)
+## Check you're done
 
-Each of you adds one file, alone, using everything above.
-
-Create `madlib/submissions/<your-github-username>.json` (lowercase username):
-
-```json
-{
-  "contributor": {"name": "Your Name", "github_username": "yourusername"},
-  "words": {"adjective": "sleepy", "noun": "toaster", "verb": "juggles"}
-}
-```
-
-Branch → add → commit → push → pull request → merge. Branch name: `madlib-<yourusername>`. Only your own file in your pull request.
-
-**Done when** all three files are on main. If the workshop site is on the Mad Lib stage, it reads them and writes your team's story on the projector with your names.
-
----
-
-## 5. Check you're done
-
-On main, after `git pull`:
-
-```
-git log --oneline
-```
-
-You should see your three repair merges, the two route merges (one with a conflict resolution), the mission-key merge, and three Mad Lib merges. That log is the whole workshop.
-
-```
-git branch
-```
-
-lists every branch you made. They can stay.
-
----
+`git log --oneline` on main: your three repair merges, two route merges, the secret's two commits, your Mad Lib merges. That log is the whole workshop.
 
 ## Cheat sheet
 
@@ -247,4 +143,4 @@ lists every branch you made. They can stay.
 | open one save point | `git show <id>` |
 | which lane am I on | `git branch` |
 
-Stuck? Message the Coding Club group with a screenshot of the terminal. The error text is the useful part.
+Stuck? Screenshot the terminal into the Coding Club group. The error text is the useful part.
